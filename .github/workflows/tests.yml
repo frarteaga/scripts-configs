@@ -14,7 +14,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Install bats-core
         run: |
@@ -23,3 +25,6 @@ jobs:
 
       - name: Run tests
         run: bats tests/
+
+      - name: Run root-protection test as root
+        run: sudo -n bats --filter '^--apply as root requires ALLOW_ROOT=1$' tests/safety.bats
