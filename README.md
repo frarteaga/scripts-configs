@@ -63,6 +63,25 @@ Running deletion as root is intentionally blocked unless explicitly enabled:
 sudo ALLOW_ROOT=1 ./cleanup-tmp.sh --apply
 ```
 
+### Running tests
+
+The test suite uses [bats-core](https://github.com/bats-core/bats-core). On Ubuntu/Debian, install the packaged bats-core runner with:
+
+```bash
+sudo apt-get update
+sudo apt-get install -y bats
+```
+
+Then run:
+
+```bash
+bats tests/
+```
+
+Every test uses a temporary test directory through `TMP_DIR` plus `TMP_DIR_ALLOW_NONSTANDARD=1`; the suite never points the cleanup script at the real `/tmp` directory.
+
+The root-protection test runs only when Bats itself is executed as root. On ordinary non-root CI runners it is reported as skipped because Bash's `EUID` is readonly and is not safely mockable as an environment variable.
+
 ### Notes and limitations
 
 This script is intentionally conservative, but no cleanup script can completely eliminate races with processes creating or opening files concurrently. The immediate pre-delete re-check reduces that risk but does not make deletion atomic.
@@ -74,3 +93,7 @@ The reported byte counts are estimates based on `du` at discovery time. Files ma
 ### Privacy / portability audit
 
 The published script contains no environment-specific hostnames, usernames, IP addresses, repository names, cloud identifiers, service URLs, credentials, tokens, or project-specific paths. Its only built-in target path is the generic Linux `/tmp` directory.
+
+## License
+
+MIT. See [`LICENSE`](LICENSE).
